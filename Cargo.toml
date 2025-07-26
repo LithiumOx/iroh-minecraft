@@ -4,11 +4,12 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+serde_json = "1.0.120"
+anyhow = "1.0.86"
+base64 = "0.22.1"
+clap = { version = "4.5.8", features = ["derive"] }
+futures-lite = "2.3.0"
 iroh = "0.27.0"
 tokio = { version = "1", features = ["full"] }
-anyhow = "1.0"
-clap = { version = "4.5", features = ["derive"] }
-base64 = "0.22"
-rand = "0.8"                                                    # For generating the secret key initially
-tracing-subscriber = { version = "0.3.19", features = ["fmt"] }
-futures = "0.3"
+tracing = "0.1.40"
+tracing-subscriber = "0.3.18"

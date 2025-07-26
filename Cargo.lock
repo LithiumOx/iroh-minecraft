@@ -2119,10 +2119,11 @@ dependencies = [
  "anyhow",
  "base64",
  "clap",
- "futures",
+ "futures-lite",
  "iroh",
- "rand 0.8.5",
+ "serde_json",
  "tokio",
+ "tracing",
  "tracing-subscriber",
 ]
 
