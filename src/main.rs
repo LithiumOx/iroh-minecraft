@@ -86,11 +86,9 @@ async fn handle_proxy_connection(connecting: iroh::net::endpoint::Incoming) -> R
     println!("Establishing connection...");
     let connection = connecting.await.context("Failed to establish connection")?;
 
-    //
-    // >>>>> THIS IS THE CORRECT FIX, VERIFIED AGAINST THE DOCUMENTATION <<<<<
-    // The method is `remote_node()` and it is called on the `connection` object.
-    //
+    // Correctly get the remote NodeId for logging
     let node_id = connection.remote_address();
+
     println!("[{}] Connection established.", node_id);
 
     let (mut send_stream, mut recv_stream) = connection
