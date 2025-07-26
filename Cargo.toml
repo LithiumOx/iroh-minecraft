@@ -4,10 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-iroh-net = "0.27.0"
-iroh-base = "0.27.0"
+iroh = "0.27.0"
 tokio = { version = "1", features = ["full"] }
-anyhow = "1"
-clap = { version = "4", features = ["derive"] }
-base64 = "0.21"
-futures = "0.3"
+anyhow = "1.0"
+clap = { version = "4.5", features = ["derive"] }
+base64 = "0.22"
+rand = "0.8"                                      # For generating the secret key initially
+tracing-subscriber = { version = "0.3.19", features = ["fmt"] }
