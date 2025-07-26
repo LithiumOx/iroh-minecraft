@@ -1,7 +1,7 @@
 use anyhow::Result;
 use base64::Engine;
 use clap::{Parser, Subcommand};
-use iroh_net::{endpoint::Connection, key::SecretKey, Endpoint};
+use iroh_net::{endpoint::Connection, key::SecretKey, relay::RelayMode, Endpoint};
 use std::net::SocketAddr;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -63,6 +63,7 @@ async fn run_proxy(args: &ProxyArgs) -> Result<()> {
 
     let endpoint = Endpoint::builder()
         .secret_key(secret_key.clone())
+        .relay_mode(RelayMode::Default)
         .bind()
         .await?;
     let public_key = secret_key.public();
