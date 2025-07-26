@@ -2,6 +2,7 @@ use anyhow::{Context, Result};
 use base64::Engine;
 use clap::Parser;
 use iroh_net::{
+    discovery::dns::DnsDiscovery,
     key::{PublicKey, SecretKey},
     relay::RelayMode,
     Endpoint, NodeAddr,
@@ -43,6 +44,7 @@ pub async fn run_client(args: &ClientArgs) -> Result<()> {
     let endpoint = Endpoint::builder()
         .secret_key(secret_key)
         .relay_mode(RelayMode::Default)
+        .discovery(Box::new(DnsDiscovery::n0_dns()))
         .bind()
         .await?;
 
