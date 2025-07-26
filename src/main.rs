@@ -139,7 +139,11 @@ async fn handle_proxy_connection(connecting: iroh::net::endpoint::Incoming) -> R
 
 async fn run_client(args: ClientArgs) -> Result<()> {
     let secret_key = load_or_generate_secret("client_secret.key")?;
-    let endpoint = Endpoint::builder().secret_key(secret_key).bind().await?;
+    let endpoint = Endpoint::builder()
+        .secret_key(secret_key)
+        .discovery_n0()
+        .bind()
+        .await?;
     println!(
         "Iroh endpoint running. Our Node ID is {}",
         endpoint.node_id()
