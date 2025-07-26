@@ -2119,6 +2119,7 @@ dependencies = [
  "anyhow",
  "base64",
  "clap",
+ "futures",
  "iroh",
  "rand 0.8.5",
  "tokio",
