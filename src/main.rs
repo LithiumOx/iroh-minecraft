@@ -1,3 +1,16 @@
+// In your Cargo.toml, make sure you have these dependencies:
+//
+// [dependencies]
+// anyhow = "1.0.86"
+// base64 = "0.22.1"
+// clap = { version = "4.5.8", features = ["derive"] }
+// futures-lite = "2.3.0"
+// iroh = "0.27.0"
+// serde_json = "1.0.120" // <-- Needed for NodeAddr serialization
+// tokio = { version = "1", features = ["full"] }
+// tracing = "0.1.40"
+// tracing-subscriber = "0.3.18"
+
 use anyhow::{anyhow, Context, Result};
 use base64::{engine::general_purpose::STANDARD, Engine};
 use clap::{Parser, Subcommand};
@@ -47,26 +60,23 @@ async fn main() -> Result<()> {
 
 async fn run_proxy() -> Result<()> {
     let secret_key = load_or_generate_secret("proxy_secret.key")?;
+    // *** FIX: Added .alpns() to tell the proxy which protocol to listen for ***
     let endpoint = Endpoint::builder()
         .secret_key(secret_key.clone())
-        .discovery_n0()
+        .alpns(vec![ALPN_MINECRAFT.to_vec()])
         .bind()
         .await?;
 
-    let direct_addresses: Vec<SocketAddr> = endpoint
-        .direct_addresses()
-        .next()
-        .await
-        .unwrap_or_default()
-        .into_iter()
-        .map(|da| da.addr)
-        .collect();
+    // This part is now simpler and correctly gets the addresses
+    let addresses = endpoint.direct_addresses().next().await.unwrap_or_default();
+    let direct_addresses: Vec<SocketAddr> = addresses.into_iter().map(|da| da.addr).collect();
 
     let mut node_addr = NodeAddr::new(endpoint.node_id()).with_direct_addresses(direct_addresses);
     if let Some(relay_url) = endpoint.home_relay() {
         node_addr = node_addr.with_relay_url(relay_url);
     }
 
+    // This will now generate the correct, flat JSON format that the client expects
     let node_addr_str = serde_json::to_string_pretty(&node_addr)?;
     println!("\n==================================================================");
     println!("Proxy is running. Share this full NodeAddr JSON with clients:");
@@ -137,14 +147,10 @@ async fn handle_proxy_connection(connecting: iroh::net::endpoint::Incoming) -> R
 
 async fn run_client(args: ClientArgs) -> Result<()> {
     let proxy_node_addr: NodeAddr = serde_json::from_str(&args.proxy_node_addr)
-        .context("Failed to parse proxy NodeAddr JSON string")?;
+        .context("Failed to parse proxy NodeAddr JSON string. Make sure the proxy is running the latest code version.")?;
 
     let secret_key = load_or_generate_secret("client_secret.key")?;
-    let endpoint = Endpoint::builder()
-        .secret_key(secret_key)
-        .discovery_n0()
-        .bind()
-        .await?;
+    let endpoint = Endpoint::builder().secret_key(secret_key).bind().await?;
     println!(
         "Client endpoint running. Our Node ID is {}",
         endpoint.node_id()
