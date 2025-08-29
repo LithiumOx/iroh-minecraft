@@ -12,4 +12,4 @@ futures-lite = "2.3.0"
 iroh = "0.27.0"
 tokio = { version = "1", features = ["full"] }
 tracing = "0.1.40"
-tracing-subscriber = "0.3.18"
+tracing-subscriber = "0.3.20"
